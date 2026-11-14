@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdint.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -84,6 +85,10 @@ struct paddle paddle2 = {
     0
 };
 
+uint64_t samples_played = 0;
+float frequency = 493.88;
+
+
 int paused = 1;
 
 int p1_pts = 0;
@@ -106,6 +111,7 @@ SDL_Rect rect;
 SDL_Rect overlay_rect;
 TTF_Font *font;
 SDL_Surface* textSurface;
+SDL_AudioDeviceID audio_device_id;
 
 SDL_Color text_white = {255, 255, 255, 255};
 
@@ -179,7 +185,7 @@ void draw(SDL_Renderer *renderer) {
     SDL_Rect textRect;
     textRect.w = textSurface->w;
     textRect.h = textSurface->h;
-    textRect.x = (SCREEN_WIDTH / 2) - 2 - (textRect.w * 2) - 5;
+    textRect.x = (SCREEN_WIDTH / 4) - (textRect.w / 2);
     textRect.y = 5 + (textRect.h / 2);
     SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
     SDL_FreeSurface(textSurface);
@@ -189,7 +195,7 @@ void draw(SDL_Renderer *renderer) {
     textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
     textRect.w = textSurface->w;
     textRect.h = textSurface->h;
-    textRect.x = (SCREEN_WIDTH / 2) + 2 + textRect.w + 5;
+    textRect.x = (SCREEN_WIDTH / 2) + (SCREEN_WIDTH / 4) - (textRect.w / 2);
     textRect.y = 5 + (textRect.h / 2);
     SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
     SDL_FreeSurface(textSurface);
@@ -244,7 +250,7 @@ void reset_ball(int side) {
             ball_dy = 0;
 
             ball_x = SCREEN_WIDTH / 2 - 5;
-            ball_y = RANDINT(100, SCREEN_WIDTH - 100);
+            ball_y = RANDINT(100, SCREEN_HEIGHT - 100);
 
             switch (side)
             {
@@ -272,9 +278,19 @@ void reset_ball(int side) {
     }
 }
 
+int last_audio = 0;
+void beep() {
+    last_audio = SDL_GetTicks();
+    SDL_PauseAudioDevice(audio_device_id, 0);
+}
 
+unsigned int audio_dur = 32;
 float paddleSpeed = 0.9;
 void update_pos() {
+    if (SDL_GetTicks() - last_audio > audio_dur) {
+        SDL_PauseAudioDevice(audio_device_id, 1);
+    }
+
     paddle1.dy = 0;
     paddle2.dy = 0;
 
@@ -307,6 +323,9 @@ void update_pos() {
 
     if (ball_y < 0 || ball_y > SCREEN_HEIGHT - 10) {
         ball_dy = -ball_dy * 1.05;
+        audio_dur = 16;
+        frequency = 246.94;
+        beep();
     } 
 
     if (ball_x > paddle1.x && 
@@ -324,7 +343,9 @@ void update_pos() {
         if (ball_dy < paddle1.y + 5 + (paddle1.h / 2) && ball_dy > paddle1.y - 5 + (paddle1.h / 2)) {
             ball_dy = float_rand(-0.1, 0.1);
         }
-        
+        audio_dur = 32;
+        frequency = 493.88;
+        beep();
         ball_dx = -ball_dx;
     }
 
@@ -345,6 +366,9 @@ void update_pos() {
         }
         ball_x = paddle2.x;
         ball_dy = ball_dy + (paddle2.dy * 0.5);
+        audio_dur = 32;
+        frequency = 493.88;
+        beep();
         ball_dx = -ball_dx;
     }
 
@@ -353,6 +377,9 @@ void update_pos() {
             p1_pts++;
             ball_out_time = SDL_GetTicks();
             ball_out = 1;
+            audio_dur = 250;
+            frequency = 246.94;
+            beep();
         }
         reset_ball(1);
     }
@@ -361,6 +388,9 @@ void update_pos() {
             p2_pts++;
             ball_out_time = SDL_GetTicks();
             ball_out = 1;
+            audio_dur = 250;
+            frequency = 246.94;
+            beep();
         }
         reset_ball(0);
     }
@@ -377,6 +407,26 @@ void update_pos() {
 
     paddleLeft.y = paddle1.y;
     paddleRight.y = paddle2.y;
+}
+
+
+void audio_callback(void* userdata, uint8_t* stream, int len)
+{
+    uint64_t* samples_played = (uint64_t*)userdata;
+    float* fstream = (float*)(stream);
+
+    static const float volume = 0.2;
+
+    for(int sid = 0; sid < (len / 8); ++sid)
+    {
+        double time = (*samples_played + sid) / 44100.0;
+        double x = 2.0 * M_PI * time * frequency;
+        double sample = (sin(x) >= 0.0) ? volume : -volume;
+        fstream[2 * sid + 0] = sample; /* L */
+        fstream[2 * sid + 1] = sample; /* R */
+    }
+
+    *samples_played += (len / 8);
 }
 
 int main(int argc, char* argv[])
@@ -403,6 +453,31 @@ int main(int argc, char* argv[])
     }
 
     font = TTF_OpenFont(FONT, 32);
+
+    if(SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+        fprintf(stderr,
+            "Error initializing SDL. SDL_Error: %s\n",
+            SDL_GetError()
+        );
+        return -1;
+    }
+
+    SDL_AudioSpec audio_spec_want, audio_spec;
+    SDL_memset(&audio_spec_want, 0, sizeof(audio_spec_want));
+
+    audio_spec_want.freq     = 44100;
+    audio_spec_want.format   = AUDIO_F32;
+    audio_spec_want.channels = 2;
+    audio_spec_want.samples  = 512;
+    audio_spec_want.callback = audio_callback;
+    audio_spec_want.userdata = (void*)&samples_played;
+
+    audio_device_id = SDL_OpenAudioDevice(
+        NULL, 0,
+        &audio_spec_want, &audio_spec,
+        SDL_AUDIO_ALLOW_FORMAT_CHANGE
+    );
 
 
 
@@ -457,6 +532,7 @@ int main(int argc, char* argv[])
                 break;
             }
 
+            // SDL_PauseAudioDevice(audio_device_id, 0);
             // Event loop
             while(!quit)
             {
@@ -469,7 +545,7 @@ int main(int argc, char* argv[])
                     switch (event.type)
                     {
                     case SDL_KEYDOWN:
-                        printf("Key press detected\n");
+                        // printf("Key press detected\n");
                         if (code == 41) {
                             quit = 1;
                         }
@@ -477,7 +553,7 @@ int main(int argc, char* argv[])
                             paused = !paused;
                         }
                         
-                        printf("\n%d\n", code);
+                        // printf("\n%d\n", code);
 
                         if (code == 4) { // A
                             plr1_btns[0] = 1;
@@ -496,7 +572,7 @@ int main(int argc, char* argv[])
                         break;
 
                     case SDL_KEYUP:
-                        printf("Key release detected\n");
+                        // printf("Key release detected\n");
                         // int code1 = event.key.keysym.scancode;
 
                         if (code == 4) { // A

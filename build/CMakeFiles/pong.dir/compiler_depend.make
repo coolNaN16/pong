@@ -270,6 +270,7 @@ pong: /lib/x86_64-linux-gnu/libFLAC.so.14 \
   /lib/x86_64-linux-gnu/libm.so.6 \
   /lib/x86_64-linux-gnu/libmp3lame.so.0 \
   /lib/x86_64-linux-gnu/libmpg123.so.0 \
+  /lib/x86_64-linux-gnu/libmvec.so.1 \
   /lib/x86_64-linux-gnu/libogg.so.0 \
   /lib/x86_64-linux-gnu/libopus.so.0 \
   /lib/x86_64-linux-gnu/libpcre2-8.so.0 \
@@ -292,6 +293,7 @@ pong: /lib/x86_64-linux-gnu/libFLAC.so.14 \
   /usr/lib/x86_64-linux-gnu/crtn.o \
   /usr/lib/x86_64-linux-gnu/libc.so \
   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 \
+  /usr/lib/x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o \
   /usr/lib/gcc/x86_64-linux-gnu/14/crtendS.o \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
@@ -327,6 +329,8 @@ CMakeFiles/pong.dir/src/main.c.o:
 /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o:
+
+/usr/lib/x86_64-linux-gnu/libm.so:
 
 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1:
 
@@ -475,6 +479,8 @@ CMakeFiles/pong.dir/src/main.c.o:
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
 /usr/include/string.h:
+
+/lib/x86_64-linux-gnu/libmvec.so.1:
 
 /usr/include/stdlib.h:
 

@@ -3,6 +3,11 @@ pong: \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/crti.o \
   /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o \
   CMakeFiles/pong.dir/src/main.c.o \
+  /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/libm.so \
+  /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/libm.so \
+  /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/libm.so \
+  /lib/x86_64-linux-gnu/libm.so.6 \
+  /lib/x86_64-linux-gnu/libmvec.so.1 \
   /usr/lib/x86_64-linux-gnu/libSDL2_image.so \
   /usr/lib/x86_64-linux-gnu/libSDL2_ttf.so \
   /usr/lib/x86_64-linux-gnu/libSDL2_net.so \
@@ -30,10 +35,10 @@ pong: \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/14/crtendS.o \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/crtn.o \
+  /lib64/ld-linux-x86-64.so.2 \
   /lib/x86_64-linux-gnu/libfreetype.so.6 \
   /lib/x86_64-linux-gnu/libharfbuzz.so.0 \
   /lib/x86_64-linux-gnu/libasound.so.2 \
-  /lib/x86_64-linux-gnu/libm.so.6 \
   /lib/x86_64-linux-gnu/libpulse.so.0 \
   /lib/x86_64-linux-gnu/libsamplerate.so.0 \
   /lib/x86_64-linux-gnu/libX11.so.6 \
@@ -50,7 +55,6 @@ pong: \
   /lib/x86_64-linux-gnu/libwayland-cursor.so.0 \
   /lib/x86_64-linux-gnu/libxkbcommon.so.0 \
   /lib/x86_64-linux-gnu/libdecor-0.so.0 \
-  /lib64/ld-linux-x86-64.so.2 \
   /lib/x86_64-linux-gnu/libz.so.1 \
   /lib/x86_64-linux-gnu/libbz2.so.1.0 \
   /lib/x86_64-linux-gnu/libpng16.so.16 \
@@ -88,6 +92,16 @@ pong: \
 /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o:
 
 CMakeFiles/pong.dir/src/main.c.o:
+
+/usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/libm.so:
+
+/usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/libm.so:
+
+/usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/libm.so:
+
+/lib/x86_64-linux-gnu/libm.so.6:
+
+/lib/x86_64-linux-gnu/libmvec.so.1:
 
 /usr/lib/x86_64-linux-gnu/libSDL2_image.so:
 
@@ -143,13 +157,13 @@ CMakeFiles/pong.dir/src/main.c.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/crtn.o:
 
+/lib64/ld-linux-x86-64.so.2:
+
 /lib/x86_64-linux-gnu/libfreetype.so.6:
 
 /lib/x86_64-linux-gnu/libharfbuzz.so.0:
 
 /lib/x86_64-linux-gnu/libasound.so.2:
-
-/lib/x86_64-linux-gnu/libm.so.6:
 
 /lib/x86_64-linux-gnu/libpulse.so.0:
 
@@ -182,8 +196,6 @@ CMakeFiles/pong.dir/src/main.c.o:
 /lib/x86_64-linux-gnu/libxkbcommon.so.0:
 
 /lib/x86_64-linux-gnu/libdecor-0.so.0:
-
-/lib64/ld-linux-x86-64.so.2:
 
 /lib/x86_64-linux-gnu/libz.so.1:
 
