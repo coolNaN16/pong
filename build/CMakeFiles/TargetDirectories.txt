@@ -1,0 +1,3 @@
+/home/aptx/GitHub/C-Projects/Graphical/basic-c-sdl-project/build/CMakeFiles/pong.dir
+/home/aptx/GitHub/C-Projects/Graphical/basic-c-sdl-project/build/CMakeFiles/edit_cache.dir
+/home/aptx/GitHub/C-Projects/Graphical/basic-c-sdl-project/build/CMakeFiles/rebuild_cache.dir
