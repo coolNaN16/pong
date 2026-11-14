@@ -30,9 +30,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_audio.h>
 
 // Define MAX and MIN macros
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
@@ -42,6 +45,7 @@
 // Define screen dimensions
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   600
+#define FONT "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 
 // Source - https://stackoverflow.com/a/44105089
 // Posted by baz, modified by community. See post 'Timeline' for change history
@@ -80,6 +84,8 @@ struct paddle paddle2 = {
     0
 };
 
+int paused = 1;
+
 int p1_pts = 0;
 int p2_pts = 0;
 
@@ -97,6 +103,11 @@ SDL_Rect paddleRight;
 SDL_Rect divider;
 SDL_Rect ball;
 SDL_Rect rect;
+SDL_Rect overlay_rect;
+TTF_Font *font;
+SDL_Surface* textSurface;
+
+SDL_Color text_white = {255, 255, 255, 255};
 
 void setup() {
     // Position rects for paddles.
@@ -157,14 +168,70 @@ void draw(SDL_Renderer *renderer) {
     SDL_RenderFillRect(renderer, &paddleLeft);
     SDL_RenderFillRect(renderer, &paddleRight);
     SDL_RenderFillRect(renderer, &ball);
+
+    char p1_pts_c[20];
+    char p2_pts_c[20];
+    snprintf(p1_pts_c, sizeof(p1_pts_c), "%d", p1_pts);
+    snprintf(p2_pts_c, sizeof(p1_pts_c), "%d", p2_pts);
+
+    textSurface = TTF_RenderText_Solid(font, p1_pts_c, text_white);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_Rect textRect;
+    textRect.w = textSurface->w;
+    textRect.h = textSurface->h;
+    textRect.x = (SCREEN_WIDTH / 2) - 2 - (textRect.w * 2) - 5;
+    textRect.y = 5 + (textRect.h / 2);
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+
+    textSurface = TTF_RenderText_Solid(font, p2_pts_c, text_white);
+    textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    textRect.w = textSurface->w;
+    textRect.h = textSurface->h;
+    textRect.x = (SCREEN_WIDTH / 2) + 2 + textRect.w + 5;
+    textRect.y = 5 + (textRect.h / 2);
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
     
+    if (paused) {
+        overlay_rect.w = SCREEN_WIDTH;
+        overlay_rect.h = SCREEN_HEIGHT;
+        overlay_rect.x = 0;
+        overlay_rect.y = 0;
+
+        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 150);
+        SDL_RenderFillRect(renderer, &rect);
+
+        textSurface = TTF_RenderText_Solid(font,"Paused", text_white);
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        textRect.x = (SCREEN_WIDTH / 2) - (textRect.w / 2);
+        textRect.y = (SCREEN_HEIGHT / 2) - (textRect.h);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+
+        textSurface = TTF_RenderText_Solid(font,"Space to start!", text_white);
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        textRect.x = (SCREEN_WIDTH / 2) - (textRect.w / 2);
+        textRect.y = (SCREEN_HEIGHT / 2);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+    }
 
     // Update screen
     SDL_RenderPresent(renderer);
+   
 }
 
 
-int ball_out = 1;
+int ball_out = 0;
 int ball_out_time = 0;
 void reset_ball(int side) {
     // printf("BOT: %d, BO: %d", ball_out_time, ball_out);
@@ -177,26 +244,36 @@ void reset_ball(int side) {
             ball_dy = 0;
 
             ball_x = SCREEN_WIDTH / 2 - 5;
-            ball_y = rand() % (SCREEN_HEIGHT - 10);
+            ball_y = RANDINT(100, SCREEN_WIDTH - 100);
 
             switch (side)
             {
             case 0:
-                ball_dx = -0.4;
+                ball_dx = -0.8;
                 break;
             
             case 1:
-                ball_dx = 0.4;
+                ball_dx = 0.8;
                 break;
             }
             
-            ball_dy = float_rand(-0.4, 0.4);
+            switch (RANDINT(0, 1))
+            {
+            case 0:
+                ball_dy = float_rand(-0.3, -0.6);
+                break;
+            
+            case 1:
+                ball_dy = float_rand(0.3, 0.6);
+                break;
+            }
+            
         }
     }
 }
 
 
-float paddleSpeed = 0.85;
+float paddleSpeed = 0.9;
 void update_pos() {
     paddle1.dy = 0;
     paddle2.dy = 0;
@@ -318,6 +395,17 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+    if (TTF_Init() < 0)
+    {
+        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
+        SDL_Quit();
+        return EXIT_FAILURE;
+    }
+
+    font = TTF_OpenFont(FONT, 32);
+
+
+
 #if defined linux && SDL_VERSION_ATLEAST(2, 0, 8)
     // Disable compositor bypass
     if(!SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0"))
@@ -356,17 +444,16 @@ int main(int argc, char* argv[])
             setup();
             // Event loop exit flag
             int quit = 0;
-            int paused = 1;
 
             ball_dy = float_rand(-0.4, 0.4);
             switch (RANDINT(0, 1))
             {
             case 0:
-                ball_dx = 0.4;
+                ball_dx = 1;
                 break;
             
             case 1:
-                ball_dx = -0.4;
+                ball_dx = -1;
                 break;
             }
 
@@ -439,6 +526,7 @@ int main(int argc, char* argv[])
                     update_pos();
                 }
                 draw(renderer);
+                
                 SDL_Delay(1);
             }
 

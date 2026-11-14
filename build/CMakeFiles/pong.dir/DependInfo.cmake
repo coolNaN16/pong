@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/aptx/GitHub/C-Projects/Graphical/basic-c-sdl-project/src/main.c" "CMakeFiles/pong.dir/src/main.c.o" "gcc" "CMakeFiles/pong.dir/src/main.c.o.d"
+  "/home/aptx/GitHub/pong/src/main.c" "CMakeFiles/pong.dir/src/main.c.o" "gcc" "CMakeFiles/pong.dir/src/main.c.o.d"
   "" "pong" "gcc" "CMakeFiles/pong.dir/link.d"
   )
 

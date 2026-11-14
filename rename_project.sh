@@ -89,7 +89,7 @@ read RENAME_PROJECT
 if [ -n "$RENAME_PROJECT" ] && [ "$(echo "$RENAME_PROJECT" | tr a-z A-Z)" = "Y" ]; then
     sed -i "s/Pong/${PROJECT_NAME}/g" README.md rename_project.sh
     sed -i "s/pong/${PROJECT_EXECUTABLE_NAME}/g" README.md IDE_USAGE.md CMakeLists.txt rename_project.sh
-    sed -i "s;https://gitlab.com/aminosbh/pong.git;${PROJECT_GIT_REPO};g" README.md rename_project.sh
+    sed -i "s;https://github.com/coolnan16/pong;${PROJECT_GIT_REPO};g" README.md rename_project.sh
     echo -e "\e[32mThe project was successfully renamed\e[0m"
 else
     echo -e "\e[33mOperation aborted\e[0m"

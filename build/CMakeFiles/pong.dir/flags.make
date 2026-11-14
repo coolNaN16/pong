@@ -4,7 +4,7 @@
 # compile C with /usr/bin/cc
 C_DEFINES = 
 
-C_INCLUDES = -I/home/aptx/GitHub/C-Projects/Graphical/basic-c-sdl-project/include -isystem /usr/include/SDL2
+C_INCLUDES = -I/home/aptx/GitHub/pong/include -isystem /usr/include/SDL2
 
 C_FLAGS = -Wall -Wextra -pedantic -Werror
 
