@@ -38,7 +38,7 @@ sudo apt install libsdl2-image-dev libsdl2-ttf-dev libsdl2-net-dev libsdl2-mixer
 
 ```sh
 # Clone this repo
-git clone https://gitlab.com/aminosbh/pong.git
+git clone https://github.com/coolnan16/pong.git
 cd pong
 
 # Create a build folder
@@ -63,7 +63,7 @@ See [IDE_USAGE.md](IDE_USAGE.md) for details.
 
 ## License
 
-Author: Amine B. Hassouna [@aminosbh](https://gitlab.com/aminosbh)
+Original Author: Amine B. Hassouna [@aminosbh](https://gitlab.com/aminosbh)
 
 This project is distributed under the terms of the MIT license
 [&lt;LICENSE&gt;](LICENSE).

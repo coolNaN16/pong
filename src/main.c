@@ -33,6 +33,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdint.h>
+#include <math.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -46,7 +47,7 @@
 // Define screen dimensions
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   600
-#define FONT "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+#define FONT "/home/aptx/GitHub/pong/src/OCRA.ttf"
 
 // Source - https://stackoverflow.com/a/44105089
 // Posted by baz, modified by community. See post 'Timeline' for change history
@@ -110,6 +111,8 @@ SDL_Rect ball;
 SDL_Rect rect;
 SDL_Rect overlay_rect;
 TTF_Font *font;
+TTF_Font *font_24;
+TTF_Font *font_16;
 SDL_Surface* textSurface;
 SDL_AudioDeviceID audio_device_id;
 
@@ -207,28 +210,96 @@ void draw(SDL_Renderer *renderer) {
         overlay_rect.x = 0;
         overlay_rect.y = 0;
 
-        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 150);
-        SDL_RenderFillRect(renderer, &rect);
+        // SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 150);
+        // SDL_RenderFillRect(renderer, &overlay_rect);
 
         textSurface = TTF_RenderText_Solid(font,"Paused", text_white);
         textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         textRect.w = textSurface->w;
         textRect.h = textSurface->h;
-        textRect.x = (SCREEN_WIDTH / 2) - (textRect.w / 2);
-        textRect.y = (SCREEN_HEIGHT / 2) - (textRect.h);
+        textRect.x = SCREEN_WIDTH / 4 - (textRect.w / 2);
+        textRect.y = (SCREEN_HEIGHT / 2) - (textRect.h * 2);
         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
         SDL_FreeSurface(textSurface);
         SDL_DestroyTexture(textTexture);
 
-        textSurface = TTF_RenderText_Solid(font,"Space to start!", text_white);
+        int placement_text_yes_uhhuh = SCREEN_WIDTH / 4 - (textRect.w / 2);
+
+        textSurface = TTF_RenderText_Solid(font_16,"[R] Reset", text_white);
         textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         textRect.w = textSurface->w;
         textRect.h = textSurface->h;
-        textRect.x = (SCREEN_WIDTH / 2) - (textRect.w / 2);
-        textRect.y = (SCREEN_HEIGHT / 2);
+        textRect.x = placement_text_yes_uhhuh;
+        textRect.y = SCREEN_HEIGHT / 2 + (textRect.h * 1);
         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
         SDL_FreeSurface(textSurface);
         SDL_DestroyTexture(textTexture);
+
+        textSurface = TTF_RenderText_Solid(font_16,"[SPACE] Start", text_white);
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        textRect.x = placement_text_yes_uhhuh;
+        textRect.y = SCREEN_HEIGHT / 2 + (textRect.h * 3);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+
+
+        textSurface = TTF_RenderText_Solid(font_16,"[ESC] Exit", text_white);
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        textRect.x = placement_text_yes_uhhuh;
+        textRect.y = SCREEN_HEIGHT / 2 + (textRect.h * 2);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+
+
+        textSurface = TTF_RenderText_Solid(font_16,"Controls: ", text_white);
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        textRect.x = SCREEN_WIDTH - (SCREEN_WIDTH / 4) - textRect.w;
+        textRect.y = SCREEN_HEIGHT / 2 - (textRect.h * 3);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+
+        placement_text_yes_uhhuh = SCREEN_WIDTH - (SCREEN_WIDTH / 4) - textRect.w;
+
+
+        textSurface = TTF_RenderText_Solid(font_16,"PLR: UP  DOWN", text_white);
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        textRect.x = placement_text_yes_uhhuh;
+        textRect.y = SCREEN_HEIGHT / 2 + (textRect.h * 1);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+        
+        textSurface = TTF_RenderText_Solid(font_16,"P1 : [A] [D]", text_white);
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        textRect.x = placement_text_yes_uhhuh;
+        textRect.y = SCREEN_HEIGHT / 2 + (textRect.h * 2);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+
+        textSurface = TTF_RenderText_Solid(font_16,"P2 : [L] [J]", text_white);
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        textRect.x = placement_text_yes_uhhuh;
+        textRect.y = SCREEN_HEIGHT / 2 + (textRect.h * 3);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+        
     }
 
     // Update screen
@@ -453,6 +524,8 @@ int main(int argc, char* argv[])
     }
 
     font = TTF_OpenFont(FONT, 32);
+    font_24 = TTF_OpenFont(FONT, 24);
+    font_16 = TTF_OpenFont(FONT, 16);
 
     if(SDL_Init(SDL_INIT_AUDIO) < 0)
     {
@@ -547,10 +620,19 @@ int main(int argc, char* argv[])
                     case SDL_KEYDOWN:
                         // printf("Key press detected\n");
                         if (code == 41) {
-                            quit = 1;
+                            // paused = !paused;
+                            if (paused) {
+                                quit = 1;
+                            }
                         }
                         if (code == 44) {
                             paused = !paused;
+                        }
+                        if (code == 21) {
+                            if (paused) {
+                                p1_pts = 0;
+                                p2_pts = 0;
+                            }
                         }
                         
                         // printf("\n%d\n", code);
